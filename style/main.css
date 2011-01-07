@@ -1,0 +1,19 @@
+body {
+background-image: url("border_background.jpg");
+}
+.punwrap {
+background-image: url("body_background.jpg");
+border: 1px solid #939393;
+color: #FFE081;
+font-size: 14px;
+margin: 20px;
+}
+.box {
+margin: 20px;
+}
+a:link, a:active, a:visited {
+color: #FFB049;
+font-size: 14px;
+font-weight: bold;
+text-decoration: none;
+}
