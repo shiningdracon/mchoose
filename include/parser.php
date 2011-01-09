@@ -890,9 +890,9 @@ function parse_message($text, $hide_smilies)
 	}
 
 	// Add paragraph tag around post, but make sure there are no empty paragraphs
-	$text = preg_replace('#<br />\s*?<br />((\s*<br />)*)#i', "</p>$1<p>", $text);
-	$text = str_replace('<p><br />', '<p>', $text);
-	$text = str_replace('<p></p>', '', '<p>'.$text.'</p>');
+	//$text = preg_replace('#<br />\s*?<br />((\s*<br />)*)#i', "</p>$1<p>", $text);
+	//$text = str_replace('<p><br />', '<p>', $text);
+	//$text = str_replace('<p></p>', '', '<p>'.$text.'</p>');
 
 	return $text;
 }
