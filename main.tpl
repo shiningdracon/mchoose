@@ -8,9 +8,7 @@
 <body>
 
 <div class="punwrap">
-<div class="box">
 <pun_main>
-</div>
 </div>
 
 </body>
