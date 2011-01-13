@@ -8,7 +8,7 @@ require PUN_ROOT.'include/dblayer/common_db.php';
 require PUN_ROOT.'include/parser.php';
 
 // Player message id
-$pcmid = isset($_GET['pcmid']) ? intval($_GET['pcmid']) : 0;
+$parentindex = isset($_GET['parentindex']) ? intval($_GET['parentindex']) : 0;
 
 
 // Send no-cache headers
@@ -22,8 +22,17 @@ header('Content-type: application/json; charset=utf-8');
 
 $value = array();
 
+$result = null;
 // fetch message
-$result = $db->query('SELECT nodeindex, nodetype, message FROM '.$db->prefix.'nodes WHERE nodetype IN (1,3) AND parentindex='.$pcmid) or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
+if (isset($_GET['nodeindex']))
+{
+	$nodeindex = isset($_GET['nodeindex']) ? intval($_GET['nodeindex']) : 0;
+	$result = $db->query('SELECT nodeindex, nodetype, message FROM '.$db->prefix.'nodes WHERE nodetype=1 AND nodeindex='.$nodeindex) or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
+}
+else
+{
+	$result = $db->query('SELECT nodeindex, nodetype, message FROM '.$db->prefix.'nodes WHERE nodetype IN (1,3) AND parentindex='.$parentindex) or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
+}
 
 if ($db->num_rows($result))
 {
@@ -43,7 +52,7 @@ if ($db->num_rows($result))
 		}
 	}
 	$npcmessage['message'] = parse_message($npcmessage['message'], '0');
-	$value['message'] = '<p>'.$npcmessage['message'].'</p>';
+	$value['message'] = array('id'=>$npcmessage['nodeindex'], 'message'=>$npcmessage['message']);
 
 	// fetch choices
 	$result = $db->query('SELECT id, nodeindex, nodetype, message FROM '.$db->prefix.'nodes WHERE parentindex='.$npcmessage['nodeindex']) or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());

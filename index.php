@@ -1,6 +1,8 @@
 <?php
 
-$start_id = isset($_GET['startid']) ? intval($_GET['startid']) : 0;
+//TODO:query start_index from db by given name
+//$gameid = isset($_GET['gameid']) ? intval($_GET['gameid']) : 0;
+$start_index = 1;
 
 // Send no-cache headers
 header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
@@ -72,32 +74,44 @@ function deleteCookie(c_name)
 document.cookie=c_name+ "=;" +("expires=Thu, 01-Jan-1970 00:00:01 GMT");
 }
 
-function getMCNode(id)
+function getMCNode(dataarray)
 {
 $.ajax({
   url: "ajax.php",
-  data: ({'pcmid': id}),
+  data: (dataarray),
   cache: false,
   dataType: "json",
   success: function(msg){
     $("#results").empty();
-    $("#results").append(msg.message);
+    $("#results").append(msg.message.message);
     if (msg.choices){
       for (i=0;i<msg.choices.length;i++){
-        $("#results").append('<a href="#" onclick="getMCNode('+msg.choices[i].id+')">'+msg.choices[i].message+"</a>");
+        $("#results").append('<a href="#" onclick="getMCNodeByParentIndex('+msg.choices[i].id+')">'+msg.choices[i].message+"</a>");
       }
     }
-    setCookie("testgame", id, 365);
+    setCookie("testgame", msg.message.id, 365);
   }
 });
+}
+
+function getMCNodeByIndex(index)
+{
+  var dataarray = {'nodeindex': index};
+  getMCNode(dataarray);
+}
+
+function getMCNodeByParentIndex(parentindex)
+{
+  var dataarray = {'parentindex': parentindex};
+  getMCNode(dataarray);
 }
 
 $(document).ready( function(){
 var savedgame = getCookie("testgame");
 if (savedgame == null || savedgame == ""){
-getMCNode(<?php echo $start_id ?>);
+getMCNodeByIndex(<?php echo $start_index ?>);
 } else {
-getMCNode(savedgame);
+getMCNodeByIndex(savedgame);
 }
 } );
 </script>
@@ -105,7 +119,7 @@ getMCNode(savedgame);
 <div class="box" id="results"></div>
 <div class="clearset"></div>
 <div class="box">
-	<a href="#" onclick="deleteCookie('testgame');getMCNode(<?php echo $start_id ?>);">Restart game</a>
+	<a href="#" onclick="deleteCookie('testgame');getMCNodeByIndex(<?php echo $start_index ?>);">Restart game</a>
 </div>
 
 <?php
