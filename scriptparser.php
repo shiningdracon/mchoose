@@ -129,6 +129,8 @@ function parse_set($array, &$params)
 	//return array('set', 'ok');
 }
 
+/*
+//debug
 $param = array();
 
 print("before:");
@@ -149,5 +151,6 @@ print("ret:");
 print_r($ret);
 print("after:");
 print_r($param);
+*/
 
 ?>

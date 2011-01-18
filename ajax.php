@@ -6,6 +6,7 @@ require PUN_ROOT.'include/functions.php';
 require PUN_ROOT.'include/utf8/utf8.php';
 require PUN_ROOT.'include/dblayer/common_db.php';
 require PUN_ROOT.'include/parser.php';
+require PUN_ROOT.'scriptparser.php';
 
 // Player message id
 $parentindex = isset($_GET['parentindex']) ? intval($_GET['parentindex']) : 0;
@@ -39,16 +40,32 @@ if ($db->num_rows($result))
 	$npcmessage = $db->fetch_assoc($result);
 	if ($npcmessage['nodetype'] == 3)
 	{
-		$array = split("[ \n]", $npcmessage['message']);
-		$label = $array[1];
-		$result = $db->query('SELECT nodeindex, message FROM '.$db->prefix.'nodes WHERE nodetype=1 AND label=\''.$label.'\'') or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
-		if ($db->num_rows($result))
+		$param = array();
+		$ret = mc_script_parser($npcmessage['message'], $param);
+		if ($ret && $ret[0] == 'goto')
 		{
-			$npcmessage = $db->fetch_assoc($result);
+			$result = $db->query('SELECT nodeindex, message FROM '.$db->prefix.'nodes WHERE nodetype=1 AND label=\''.$db->escape($ret[1]).'\'') or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
+			if ($db->num_rows($result))
+			{
+				$npcmessage = $db->fetch_assoc($result);
+			}
+			else
+			{
+				error('Unable to find label:'.$ret[1]);
+			}
 		}
 		else
 		{
-			error('Unable to find label:'.$label);
+			// no need to jump, so we continue the current line.
+			$result = $db->query('SELECT nodeindex, nodetype, message FROM '.$db->prefix.'nodes WHERE nodetype IN (1,3) AND parentindex='.$npcmessage['nodeindex']) or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
+			if ($db->num_rows($result))
+			{
+				$npcmessage = $db->fetch_assoc($result);
+			}
+			else
+			{
+				error('Unable to find message node with parent:'.$npcmessage['nodeindex']);
+			}
 		}
 	}
 	$npcmessage['message'] = parse_message($npcmessage['message'], '0');
