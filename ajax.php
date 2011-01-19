@@ -8,9 +8,13 @@ require PUN_ROOT.'include/dblayer/common_db.php';
 require PUN_ROOT.'include/parser.php';
 require PUN_ROOT.'scriptparser.php';
 
-// Player message id
-$parentindex = isset($_GET['parentindex']) ? intval($_GET['parentindex']) : 0;
+$data = json_decode(file_get_contents("php://input"), true);
 
+// Player message id
+$parentindex = isset($data['parentindex']) ? intval($data['parentindex']) : 0;
+
+// Params
+$param = isset($data['params']) ? $data['params']: array();
 
 // Send no-cache headers
 header('Expires: Thu, 21 Jul 1977 07:30:00 GMT'); // When yours truly first set eyes on this world! :)
@@ -25,9 +29,9 @@ $value = array();
 
 $result = null;
 // fetch message
-if (isset($_GET['nodeindex']))
+if (isset($data['nodeindex']))
 {
-	$nodeindex = isset($_GET['nodeindex']) ? intval($_GET['nodeindex']) : 0;
+	$nodeindex = isset($data['nodeindex']) ? intval($data['nodeindex']) : 0;
 	$result = $db->query('SELECT nodeindex, nodetype, message FROM '.$db->prefix.'nodes WHERE nodetype=1 AND nodeindex='.$nodeindex) or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
 }
 else
@@ -40,7 +44,6 @@ if ($db->num_rows($result))
 	$npcmessage = $db->fetch_assoc($result);
 	if ($npcmessage['nodetype'] == 3)
 	{
-		$param = array();
 		$ret = mc_script_parser($npcmessage['message'], $param);
 		if ($ret && $ret[0] == 'goto')
 		{
@@ -96,6 +99,8 @@ else
 {
 	$value['message'] = 'THE END';
 }
+
+$value['params'] = $param;
 
 echo json_encode($value);
 

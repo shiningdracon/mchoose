@@ -44,41 +44,31 @@ ob_start();
 
 ?>
 <script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.cookies.2.2.0.min.js"></script>
 <script type="text/javascript">
 function setCookie(c_name,value,expiredays)
 {
 var exdate=new Date();
 exdate.setDate(exdate.getDate()+expiredays);
-document.cookie=c_name+ "=" +escape(value)+
-((expiredays==null) ? "" : ";expires="+exdate.toUTCString());
+$.cookies.set(c_name, value, {expiresAt: exdate});
 }
 
 function getCookie(c_name)
 {
-if (document.cookie.length>0)
-  {
-  c_start=document.cookie.indexOf(c_name + "=");
-  if (c_start!=-1)
-    {
-    c_start=c_start + c_name.length+1;
-    c_end=document.cookie.indexOf(";",c_start);
-    if (c_end==-1) c_end=document.cookie.length;
-    return unescape(document.cookie.substring(c_start,c_end));
-    }
-  }
-return "";
+return $.cookies.get(c_name);
 }
 
 function deleteCookie(c_name)
 {
-document.cookie=c_name+ "=;" +("expires=Thu, 01-Jan-1970 00:00:01 GMT");
+$.cookies.del(c_name);
 }
 
-function getMCNode(dataarray)
+function getMCNode(datastring)
 {
 $.ajax({
   url: "ajax.php",
-  data: (dataarray),
+  type: "POST",
+  data: (datastring),
   cache: false,
   dataType: "json",
   success: function(msg){
@@ -96,14 +86,14 @@ $.ajax({
 
 function getMCNodeByIndex(index)
 {
-  var dataarray = {'nodeindex': index};
-  getMCNode(dataarray);
+  var datastring = '{"nodeindex": '+ index +'}';//{'nodeindex': index, 'params': {'a': 'aa', 'b': 'bb'} };
+  getMCNode(datastring);
 }
 
 function getMCNodeByParentIndex(parentindex)
 {
-  var dataarray = {'parentindex': parentindex};
-  getMCNode(dataarray);
+  var datastring = '{"parentindex": '+ parentindex +'}';
+  getMCNode(datastring);
 }
 
 $(document).ready( function(){
