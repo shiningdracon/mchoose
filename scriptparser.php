@@ -3,7 +3,7 @@
 function mc_script_parser($str, &$params)
 {
 	$goto = null;
-	$lines = split("[\n]", $str);
+	$lines = split("[\r\n]", $str);
 	foreach ($lines as $line)
 	{
 		$array = preg_split("/[ \t]/", $line, -1, PREG_SPLIT_NO_EMPTY);

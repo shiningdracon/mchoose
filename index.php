@@ -46,6 +46,7 @@ ob_start();
 <script type="text/javascript" src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery.cookies.2.2.0.min.js"></script>
 <script type="text/javascript">
+var params = {};
 function setCookie(c_name,value,expiredays)
 {
 var exdate=new Date();
@@ -79,25 +80,45 @@ $.ajax({
         $("#results").append('<a href="#" onclick="getMCNodeByParentIndex('+msg.choices[i].id+')">'+msg.choices[i].message+"</a>");
       }
     }
+    if (msg.params){
+      params = msg.params;
+    }
     setCookie("testgame", msg.message.id, 365);
+    setCookie("testgame_params", params, 365);
   }
 });
 }
 
+function paramsToString(parray)
+{
+  var first = true;
+  var paramstring = '{';
+  for (key in parray) {
+    if (first == false) {
+      paramstring += ',';
+    }
+    first = false;
+    paramstring += '"' + key + '": ' + '"' + parray[key] + '"';
+  }
+  paramstring += '}';
+  return paramstring;
+}
+
 function getMCNodeByIndex(index)
 {
-  var datastring = '{"nodeindex": '+ index +'}';//{'nodeindex': index, 'params': {'a': 'aa', 'b': 'bb'} };
+  var datastring = '{"nodeindex": '+ index + (params ? (', "params": ' + paramsToString(params)) : '') + '}';//{'nodeindex': index, 'params': {'a': 'aa', 'b': 'bb'} };
   getMCNode(datastring);
 }
 
 function getMCNodeByParentIndex(parentindex)
 {
-  var datastring = '{"parentindex": '+ parentindex +'}';
+  var datastring = '{"parentindex": '+ parentindex + (params ? (', "params": ' + paramsToString(params)) : '') + '}';
   getMCNode(datastring);
 }
 
 $(document).ready( function(){
 var savedgame = getCookie("testgame");
+params = getCookie("testgame_params");
 if (savedgame == null || savedgame == ""){
 getMCNodeByIndex(<?php echo $start_index ?>);
 } else {
@@ -109,7 +130,7 @@ getMCNodeByIndex(savedgame);
 <div class="box" id="results"></div>
 <div class="clearset"></div>
 <div class="box">
-	<a href="#" onclick="deleteCookie('testgame');getMCNodeByIndex(<?php echo $start_index ?>);">Restart game</a>
+	<a href="#" onclick="deleteCookie('testgame');deleteCookie('testgame_params');params={};getMCNodeByIndex(<?php echo $start_index ?>);">Restart game</a>
 </div>
 
 <?php
