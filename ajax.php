@@ -42,12 +42,12 @@ else
 if ($db->num_rows($result))
 {
 	$npcmessage = $db->fetch_assoc($result);
-	if ($npcmessage['nodetype'] == 3)
+	while ($npcmessage['nodetype'] == 3)
 	{
 		$ret = mc_script_parser($npcmessage['message'], $param);
 		if ($ret && $ret[0] == 'goto')
 		{
-			$result = $db->query('SELECT nodeindex, message FROM '.$db->prefix.'nodes WHERE nodetype=1 AND label=\''.$db->escape($ret[1]).'\'') or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT nodeindex, message FROM '.$db->prefix.'nodes WHERE nodetype IN (1,3) AND label=\''.$db->escape($ret[1]).'\'') or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
 			if ($db->num_rows($result))
 			{
 				$npcmessage = $db->fetch_assoc($result);
@@ -60,7 +60,7 @@ if ($db->num_rows($result))
 		else
 		{
 			// no need to jump, so we continue the current line.
-			$result = $db->query('SELECT nodeindex, nodetype, message FROM '.$db->prefix.'nodes WHERE nodetype=1 AND parentindex='.$npcmessage['nodeindex']) or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
+			$result = $db->query('SELECT nodeindex, nodetype, message FROM '.$db->prefix.'nodes WHERE nodetype IN (1,3) AND parentindex='.$npcmessage['nodeindex']) or error('Unable to fetch nodes info', __FILE__, __LINE__, $db->error());
 			if ($db->num_rows($result))
 			{
 				$npcmessage = $db->fetch_assoc($result);
