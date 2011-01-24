@@ -77,7 +77,7 @@ $.ajax({
     $("#results").append(msg.message.message);
     if (msg.choices){
       for (i=0;i<msg.choices.length;i++){
-        $("#results").append('<a href="#" onclick="getMCNodeByParentIndex('+msg.choices[i].id+')">'+msg.choices[i].message+"</a>");
+        $("#results").append('<p><a href="#" onclick="getMCNodeByParentIndex('+msg.choices[i].id+')">'+msg.choices[i].message+"</a></p>");
       }
     }
     if (msg.params){

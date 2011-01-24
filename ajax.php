@@ -83,7 +83,7 @@ if ($db->num_rows($result))
 		while ($cur_message = $db->fetch_assoc($result))
 		{
 			$cur_message['message'] = parse_message($cur_message['message'], '0');
-			if ($cur_message['nodetype'] == 1)
+			if ($cur_message['nodetype'] == 1 || $cur_message['nodetype'] == 3)
 			{
 				$choices[] = array('id'=>$npcmessage['nodeindex'], 'message'=>'Next');
 			}
