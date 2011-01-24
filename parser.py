@@ -12,6 +12,13 @@ def genId():
     globalid += 1
     return ret
 
+def getText(nodelist):
+    rc = []
+    for node in nodelist:
+        if node.nodeType == node.TEXT_NODE:
+            rc.append(node.data)
+    return ''.join(rc)
+
 def handleSheet(node):
     if node.firstChild.nodeName == 'topic':
         handleTopic(node.firstChild, 0)
@@ -42,7 +49,7 @@ def handleTopic(topic, parentId):
                     for childtopic in child.childNodes:
                         handleTopic(childtopic, nodeid)
         elif node.nodeName == 'title':
-            nodetitle = node.firstChild.data
+            nodetitle = getText(node.childNodes)
         elif node.nodeName == 'notes':
             nodenote = node.getElementsByTagName('plain')[0].firstChild.data
 
